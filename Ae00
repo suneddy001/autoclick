@@ -1,0 +1,91 @@
+import pyautogui
+from PIL import ImageGrab
+import time
+import keyboard  # using module keyboard
+import csv
+import os
+
+
+def main():
+    while True:
+        choice = input('Please choose mode\n1. Show x, y and RGB\n2. Auto click\nYour choice is: ')
+        if int(choice) == 1:
+            while True:
+                '''Print mouse coordinates and RGB'''
+                if keyboard.is_pressed('space'):  # if key 'q' is pressed
+                    x, y = pyautogui.position()
+                    print(x, y)
+                    print(ImageGrab.grab().load()[x, y])
+                    time.sleep(0.5)
+                elif keyboard.is_pressed('esc'):
+                    break
+        if int(choice) == 2:
+            with open('sf.csv', 'r') as sf:
+                contents = csv.reader(sf)
+                next(contents)
+                for line in contents:
+                    start_x = int(line[0])
+                    start_y = int(line[1])
+                    search_x = int(line[2])
+                    search_y = int(line[3])
+                    range_y = int(line[4])
+                    search_r, search_g, search_b = int(line[5]), int(line[6]), int(line[7])
+                    offset_x, offset_y = int(line[8]), int(line[9])
+                    print(f'start_x = {start_x}\tstart_y = {start_y}\nsearch_x = {search_x}\tsearch_y = {search_y}\n'
+                          f'range_y = {range_y}\trgb = ({search_r}, {search_g}, {search_b})\noffset_x = {offset_x}\t'
+                          f'offset_y = {offset_y}'.center(10))
+            # start_x = int(input('start x ='))
+            # start_y = int(input('start y ='))
+            # search_x = int(input('search x ='))
+            # search_y = int(input('search y ='))
+            # range_y = int(input('range_y ='))
+            # search_r, search_g, search_b = int(input('search r =')), int(input('search g =')), int(input('search b ='))
+            # offset_x = int(input('offset x ='))
+            # offset_y = int(input('offset y ='))
+                    while True:
+                        '''Search pixel RGB and click stop'''
+                        if keyboard.is_pressed('space'):  # if key 'q' is pressed
+                            os.system('cls')
+                            for y in range(search_y, search_y + range_y, 5):
+                                rgb = ImageGrab.grab().load()[search_x, y]
+                                print(search_x, y, rgb)
+                                if rgb == (search_r, search_g, search_b):
+                                    for tick_y in range(y, y + offset_y, -1):
+                                        tick_rgb = ImageGrab.grab().load()[search_x + offset_x, tick_y]
+                                        print('search_x + offset_x tick_y =', search_x + offset_x, tick_y)
+                                        if tick_rgb == (112, 112, 112):
+                                            pyautogui.moveTo(search_x + offset_x, tick_y - 5)
+                                            pyautogui.click()
+                                            pyautogui.moveTo(start_x, start_y)
+                                            pyautogui.click()
+                                            break
+                                    break
+                        elif keyboard.is_pressed('esc'):
+                            break
+
+        # if keyboard.is_pressed('space'):  # if key 'q' is pressed
+        #     for x in range(670, 680, 5):
+        #         for y in range(165, 645, 5):
+        #             compare = pyautogui.pixelMatchesColor(x, y, (60, 205, 205))
+        #             print(x, y, compare)
+        #             if compare is True:
+        #                 pyautogui.moveTo(1257, 59)
+        #                 pyautogui.click()
+
+        # time.sleep(0.1)
+
+    # while True:
+    #     for event in pygame.event.get():
+    #         if event.type == KEYDOWN and event.key == K_SPACE:
+    #             print(pyautogui.position())
+
+    # print(pyautogui.position())
+    # print(pyautogui.pixelMatchesColor(100, 100, (43, 43, 43)))
+    # print(x, y)
+    # print(pyautogui.size())
+    # print(ImageGrab.grab().load()[x, y])
+    # print(pyautogui.locateOnScreen('PC.jpg'))
+
+
+if __name__ == "__main__":
+    main()
